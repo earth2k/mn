@@ -1,0 +1,120 @@
+<!DOCTYPE html>
+<html lang="th">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>ตีโอปออออ</title>
+
+<style>
+body{
+  margin:0;
+  font-family: 'Comic Sans MS', cursive;
+  background: linear-gradient(#a0e7ff,#b4f8c8);
+  display:flex;
+  flex-direction:column;
+  align-items:center;
+  height:100vh;
+  overflow:hidden;
+}
+
+h1{ margin:10px; color:#ff4d6d }
+
+#score,#time{
+  font-size:1.3em;
+}
+
+#gameArea{
+  width:90vw;
+  max-width:700px;
+  height:60vh;
+  background:#ffd6a5;
+  border-radius:20px;
+  display:grid;
+  grid-template-columns:repeat(3,1fr);
+  grid-template-rows:repeat(2,1fr);
+  gap:15px;
+  padding:15px;
+}
+
+.hole{
+  background:#ffadad;
+  border-radius:50%;
+  position:relative;
+  overflow:hidden;
+}
+
+.mole{
+  position:absolute;
+  bottom:-100%;
+  left:50%;
+  transform:translateX(-50%);
+  width:65%;
+  height:65%;
+  border-radius:50%;        /* ⭐ ทำให้เป็นวงกลม */
+  transition:bottom .25s, transform .1s;
+  touch-action: manipulation; /* ⭐ iPad แตะติด */
+}
+
+.mole.pop{ bottom:0 }
+.mole.hit{ transform:translateX(-50%) scale(0.8) }
+</style>
+</head>
+
+<body>
+<h1>ตีโอปอๆๆๆๆ</h1>
+<div id="score">คะแนนแพ้ๆๆๆๆ: 0</div>
+<div id="time">เวลา: 30</div>
+
+<div id="gameArea">
+  <div class="hole"><img class="mole" src="person.png"></div>
+  <div class="hole"><img class="mole" src="person.png"></div>
+  <div class="hole"><img class="mole" src="person.png"></div>
+  <div class="hole"><img class="mole" src="person.png"></div>
+  <div class="hole"><img class="mole" src="person.png"></div>
+  <div class="hole"><img class="mole" src="person.png"></div>
+</div>
+
+<script>
+const moles = document.querySelectorAll('.mole');
+let score = 0, time = 30;
+
+function randomMole(){
+  return moles[Math.floor(Math.random()*moles.length)];
+}
+
+function pop(){
+  const m = randomMole();
+  if(m.classList.contains('pop')) return;
+  m.classList.add('pop');
+  setTimeout(()=>m.classList.remove('pop'),700);
+}
+
+function hit(e){
+  e.preventDefault();
+  if(!this.classList.contains('pop')) return;
+  score++;
+  document.getElementById('score').textContent = 'คะแนน: '+score;
+  this.classList.add('hit');
+  setTimeout(()=>this.classList.remove('hit'),100);
+  this.classList.remove('pop');
+}
+
+moles.forEach(m=>{
+  m.addEventListener('touchstart', hit, {passive:false});
+  m.addEventListener('click', hit);
+});
+
+const moleLoop = setInterval(pop,800);
+
+const timer = setInterval(()=>{
+  time--;
+  document.getElementById('time').textContent = 'เวลา: '+time;
+  if(time<=0){
+    clearInterval(timer);
+    clearInterval(moleLoop);
+    alert('หมดเวลา! ได้ '+score+' คะแนน');
+  }
+},1000);
+</script>
+</body>
+</html>
